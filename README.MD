@@ -1,6 +1,6 @@
 # New programming language
 
-This project is to implement a new programming language in javascript. It sorta follows a javascript like pattern in its code execution.
+This project is to implement a new programming language in typescript. It sorta follows a javascript like pattern in its code execution.
 
 I'm doing this at the suggestion of my wonderful girlfriend @somehats as a manner of improving and levelling up my skills as a programmer.
 
