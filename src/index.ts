@@ -2,24 +2,32 @@ type Primitive = number | string | boolean | null;
 interface List extends Array<Expression> {}
 type Expression = Primitive | List;
 
+type CallStack = { stack: string[]; addToStack: (x: string) => void };
+
 export const runProgram = (x: Expression[]): any => {
+    const currentCallStack = callStack([]);
+
     const array = x.map((y, i, z) => {
         if (i === z.length - 1) {
-            return evalExpression(y as any);
+            return evalExpression(y as any, currentCallStack);
         } else {
-            return evalExpression(y as any).concat("\n");
+            return evalExpression(y as any[], currentCallStack).concat("\n");
         }
     });
     return evalExpression(["#str", ...array]);
 };
 
-export const evalExpression = (x: Expression[]): any => {
+export const evalExpression = (x: Expression[], c?: CallStack): any => {
     const expression = x[0];
     const args = x.slice(1);
+    !!c && console.log(c.stack);
+    if (!!c) {
+        c.addToStack(String(expression));
+    }
     if (expression === "#if") {
         return iffy(args);
     }
-    const evaluatedArgs = args.map(evaluateArg);
+    const evaluatedArgs = args.map(arg => evaluateArg(arg, (c = undefined)));
     switch (expression) {
         case "#add": {
             return add(evaluatedArgs);
@@ -40,7 +48,7 @@ export const evalExpression = (x: Expression[]): any => {
             throw new Error(concat(evaluatedArgs));
         }
         case "#print": {
-            return print(evaluatedArgs);
+            return print(evaluatedArgs, (c = undefined));
         }
         default: {
             throw new Error("No case for this expression");
@@ -48,18 +56,19 @@ export const evalExpression = (x: Expression[]): any => {
     }
 };
 
-const evaluateArg = (x: Expression): any => {
+const evaluateArg = (x: Expression, c?: CallStack): any => {
     if (Array.isArray(x)) {
-        return evalExpression(x as any);
+        return evalExpression(x as any, c);
     } else {
         return x;
     }
 };
 
-const print = (x: Expression[]): string => {
+const print = (x: Expression[], c?: CallStack): string => {
+    console.log(c);
     let string = String(x[0]);
     for (let step = 1; step < x.length; step++) {
-        string = string + String(x[step]);
+        string = string.concat(String(x[step]));
     }
     return string;
 };
@@ -106,4 +115,13 @@ const concat = (x: Expression[]): string => {
 
 const iffy = (x: Expression[]): any => {
     return evaluateArg(evaluateArg(x[0]) ? x[1] : x[2]);
+};
+
+const callStack = (initialStack: string[]) => {
+    return {
+        stack: initialStack,
+        addToStack: function(x: string) {
+            this.stack.push(x);
+        }
+    };
 };
