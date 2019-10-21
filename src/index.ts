@@ -7,27 +7,21 @@ type CallStack = { stack: string[]; addToStack: (x: string) => void };
 export const runProgram = (x: Expression[]): any => {
     const currentCallStack = callStack([]);
 
-    const array = x.map((y, i, z) => {
-        if (i === z.length - 1) {
-            return evalExpression(y as any, currentCallStack);
-        } else {
-            return evalExpression(y as any[], currentCallStack).concat("\n");
-        }
+    x.map((y, i, z) => {
+        evalExpression(y as any, currentCallStack);
     });
-    return evalExpression(["#str", ...array]);
+
+    const print = currentCallStack.stack.map((x, i) => x.concat("\n"));
+    return evalExpression(["#str", ...print, "null"]);
 };
 
 export const evalExpression = (x: Expression[], c?: CallStack): any => {
     const expression = x[0];
     const args = x.slice(1);
-    !!c && console.log(c.stack);
-    if (!!c) {
-        c.addToStack(String(expression));
-    }
     if (expression === "#if") {
-        return iffy(args);
+        return iffy(args, c);
     }
-    const evaluatedArgs = args.map(arg => evaluateArg(arg, (c = undefined)));
+    const evaluatedArgs = args.map(arg => evaluateArg(arg, c));
     switch (expression) {
         case "#add": {
             return add(evaluatedArgs);
@@ -48,7 +42,8 @@ export const evalExpression = (x: Expression[], c?: CallStack): any => {
             throw new Error(concat(evaluatedArgs));
         }
         case "#print": {
-            return print(evaluatedArgs, (c = undefined));
+            !!c && print(evaluatedArgs, c);
+            return;
         }
         default: {
             throw new Error("No case for this expression");
@@ -64,13 +59,15 @@ const evaluateArg = (x: Expression, c?: CallStack): any => {
     }
 };
 
-const print = (x: Expression[], c?: CallStack): string => {
-    console.log(c);
+const print = (x: Expression[], c: CallStack): void => {
+    if (x[0] === undefined) {
+        return;
+    }
     let string = String(x[0]);
     for (let step = 1; step < x.length; step++) {
         string = string.concat(String(x[step]));
     }
-    return string;
+    c.addToStack(string);
 };
 
 const add = (x: Expression[]): number => {
@@ -113,8 +110,8 @@ const concat = (x: Expression[]): string => {
     return concatenatedString;
 };
 
-const iffy = (x: Expression[]): any => {
-    return evaluateArg(evaluateArg(x[0]) ? x[1] : x[2]);
+const iffy = (x: Expression[], c?: CallStack): any => {
+    return evaluateArg(evaluateArg(x[0]) ? x[1] : x[2], c);
 };
 
 const callStack = (initialStack: string[]) => {

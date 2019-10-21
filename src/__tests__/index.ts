@@ -92,4 +92,10 @@ describe("runProgramme", () => {
             "null"
         ]);
     });
+
+    it("prints expected output", () => {
+        const output = runProgram([["#print", ["print", "hi"], "there"]]);
+
+        expect(output.split("\n")).toEqual(["hi", "there", "null"]);
+    });
 });

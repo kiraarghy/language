@@ -67,3 +67,25 @@ const array = x.map((y, i, z) => {
 ```
 
 So maybe I need to try giving each evalExpression its own callStack?
+
+## 21/OCT/2019
+
+So turns out I was wrong, giving each evalExpression its own callStack was bad as I needed to do a hypercomplicated process of returning each individual contexts to the parent `runProgram` call. This is kinda gnarly and overcomplicates a lot of stuff that should have been simple.
+
+So question what does a `print` function do? It prints... So how about we have a parent context that all it cares about is what is being written to it by the child functions?
+
+so parent context: ["beep", "boop"]
+
+children: _write beep to context_ , _write boop to context_
+
+This IS WAY SIMPLER my peeps!
+
+So yeah there we have it, I also included a check to make sure our print context wasn't undefined!
+
+I wonder if it does the same behaviour as when you:
+
+```javascript
+console.log(console.log("hi"), "there");
+```
+
+❌ it does not sadly, I will need to fix this!
