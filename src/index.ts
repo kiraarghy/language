@@ -2,26 +2,43 @@ type Primitive = number | string | boolean | null;
 interface List extends Array<Expression> {}
 type Expression = Primitive | List;
 
-type CallStack = { stack: string[]; addToStack: (x: string) => void };
-
-export const runProgram = (x: Expression[]): any => {
-    const currentCallStack = callStack([]);
-
-    x.map((y, i, z) => {
-        evalExpression(y as any, currentCallStack);
-    });
-
-    const print = currentCallStack.stack.map((x, i) => x.concat("\n"));
-    return evalExpression(["#str", ...print, "null"]);
+type ProgramOutput = { lines: string[]; addToOutput: (x: string) => void };
+type Variables = {
+    stack: { [key: string]: any };
+    addToStack: (key: string, val: any) => void;
 };
 
-export const evalExpression = (x: Expression[], c?: CallStack): any => {
+export const runProgram = (x: Expression[]): any => {
+    const programOutput = createProgramOutput([]);
+    const currentVariables = variableStack({});
+    x.map((y, i, z) => {
+        evalExpression(y as any, programOutput, currentVariables);
+    });
+
+    const print = programOutput.lines.join("\n");
+    return print;
+};
+
+export const evalExpression = (
+    x: Expression[],
+    c?: ProgramOutput,
+    v?: Variables
+): any => {
     const expression = x[0];
     const args = x.slice(1);
     if (expression === "#if") {
         return iffy(args, c);
     }
-    const evaluatedArgs = args.map(arg => evaluateArg(arg, c));
+    if (
+        expression === "#def" &&
+        !!v &&
+        String(args[0]).match(/^\#[A-Za-z]+/g)
+    ) {
+        v.addToStack(args[0] as string, evaluateArg(args[1], c, v));
+        return;
+    }
+    const evaluatedArgs = args.map(arg => evaluateArg(arg, c, v));
+
     switch (expression) {
         case "#add": {
             return add(evaluatedArgs);
@@ -43,7 +60,7 @@ export const evalExpression = (x: Expression[], c?: CallStack): any => {
         }
         case "#print": {
             !!c && print(evaluatedArgs, c);
-            return;
+            return null;
         }
         default: {
             throw new Error("No case for this expression");
@@ -51,15 +68,18 @@ export const evalExpression = (x: Expression[], c?: CallStack): any => {
     }
 };
 
-const evaluateArg = (x: Expression, c?: CallStack): any => {
+const evaluateArg = (x: Expression, c?: ProgramOutput, v?: Variables): any => {
     if (Array.isArray(x)) {
-        return evalExpression(x as any, c);
+        return evalExpression(x as any, c, v);
+    }
+    if (!!v && x !== "#print" && String(x).match(/^\#[A-Za-z]+/g)) {
+        return v.stack[String(x)];
     } else {
         return x;
     }
 };
 
-const print = (x: Expression[], c: CallStack): void => {
+const print = (x: Expression[], c: ProgramOutput): void => {
     if (x[0] === undefined) {
         return;
     }
@@ -67,7 +87,7 @@ const print = (x: Expression[], c: CallStack): void => {
     for (let step = 1; step < x.length; step++) {
         string = string.concat(String(x[step]));
     }
-    c.addToStack(string);
+    c.addToOutput(string);
 };
 
 const add = (x: Expression[]): number => {
@@ -110,15 +130,24 @@ const concat = (x: Expression[]): string => {
     return concatenatedString;
 };
 
-const iffy = (x: Expression[], c?: CallStack): any => {
+const iffy = (x: Expression[], c?: ProgramOutput): any => {
     return evaluateArg(evaluateArg(x[0]) ? x[1] : x[2], c);
 };
 
-const callStack = (initialStack: string[]) => {
+const createProgramOutput = (initialOuput: string[]) => {
+    return {
+        lines: initialOuput,
+        addToOutput: function(x: string) {
+            this.lines.push(x);
+        }
+    };
+};
+
+const variableStack = (initialStack: { [key: string]: any }) => {
     return {
         stack: initialStack,
-        addToStack: function(x: string) {
-            this.stack.push(x);
+        addToStack: function(key: string, val: unknown) {
+            this.stack[key] = val;
         }
     };
 };

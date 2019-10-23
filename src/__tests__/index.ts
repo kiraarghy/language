@@ -83,7 +83,6 @@ describe("runProgramme", () => {
             ],
             ["#print", ["#print", "the #print fn itself returns null"]]
         ]);
-
         expect(output.split("\n")).toEqual([
             "hello, world!",
             "1 + 1 = 2",
@@ -94,8 +93,20 @@ describe("runProgramme", () => {
     });
 
     it("prints expected output", () => {
-        const output = runProgram([["#print", ["print", "hi"], "there"]]);
+        const output = runProgram([
+            ["#def", "#x", 1],
+            ["#print", "#x"],
+            ["#def", "#y", "hello"],
+            ["#print", ["#str", "#x", "#y"]],
+            ["#def", "#x", 2],
+            ["#print", ["#add", "#x", "#x", "#x"]]
+        ]);
 
-        expect(output.split("\n")).toEqual(["hi", "there", "null"]);
+        expect(output.split("\n")).toEqual(["1", "1hello", "6"]);
     });
+    // it("prints expected output", () => {
+    //     const output = runProgram([["#print", ["print", "hi"], "there"]]);
+
+    //     expect(output.split("\n")).toEqual(["hi", "there", "null"]);
+    // });
 });

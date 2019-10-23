@@ -89,3 +89,19 @@ console.log(console.log("hi"), "there");
 ```
 
 ❌ it does not sadly, I will need to fix this!
+
+## 22/Oct/2019
+
+Talked to my colleague Andy about why I couldn't use `array.includes()` apparently needed to add correct `lib` config to `tsconfig.json` 🙌.
+
+This has helped me a bit!
+
+## 23/Oct/2019
+
+So today was implementing a variables system into the language.
+
+This was fairly simple, just by creating a `#def` expression I matched the first arg with the `/^#[A-Za-z]+/g` regex (that I wrote by hand 🤯, yeah I don't know what has come over me either), then set that as a key for the value which is the evaluated second arg.
+
+Then when accessing the variable in the `evaluateArg` arg function we pull the value of the variables object.
+
+Also tidied up the output functionality to make it work nicer!
