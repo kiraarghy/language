@@ -104,9 +104,9 @@ describe("runProgramme", () => {
 
         expect(output.split("\n")).toEqual(["1", "1hello", "6"]);
     });
-    // it("prints expected output", () => {
-    //     const output = runProgram([["#print", ["print", "hi"], "there"]]);
-
-    //     expect(output.split("\n")).toEqual(["hi", "there", "null"]);
-    // });
+    it("prints expected output", () => {
+        const output = runProgram([["#print", ["#print", "hi"], "there"]]);
+        // interestingly, the second print concats the null return from the first print with the 'there' arg this is expected 🤷‍♀️
+        expect(output.split("\n")).toEqual(["hi", "nullthere"]);
+    });
 });

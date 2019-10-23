@@ -105,3 +105,5 @@ This was fairly simple, just by creating a `#def` expression I matched the first
 Then when accessing the variable in the `evaluateArg` arg function we pull the value of the variables object.
 
 Also tidied up the output functionality to make it work nicer!
+
+Looked into the above `#print` problem as mentioned at end of 21/Oct/2019 I think it's working as 'expected' now since the fixes I pushed today 🤷‍♀️.
