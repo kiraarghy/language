@@ -58,6 +58,12 @@ describe("evalExpression", () => {
         ).toThrowError(new Error("verybad"));
     });
 
+    test("testing for undefined expressions", () => {
+        expect(() => evalExpression(["#undefined"])).toThrowError(
+            new Error("No case for expression: '#undefined'")
+        );
+    });
+
     test("if", () => {
         expect(evalExpression(["#if", true, "a", "b"])).toBe("a");
         expect(evalExpression(["#if", false, "a", "b"])).toBe("b");
@@ -108,5 +114,10 @@ describe("runProgramme", () => {
         const output = runProgram([["#print", ["#print", "hi"], "there"]]);
         // interestingly, the second print concats the null return from the first print with the 'there' arg this is expected 🤷‍♀️
         expect(output.split("\n")).toEqual(["hi", "nullthere"]);
+    });
+    it("errors on undefined variables", () => {
+        expect(() => runProgram([["#print", "#bees"]])).toThrowError(
+            "Undefined variable 'bees'"
+        );
     });
 });

@@ -63,7 +63,7 @@ export const evalExpression = (
             return null;
         }
         default: {
-            throw new Error("No case for this expression");
+            throw new Error(`No case for expression: '${expression}'`);
         }
     }
 };
@@ -73,7 +73,11 @@ const evaluateArg = (x: Expression, c?: ProgramOutput, v?: Variables): any => {
         return evalExpression(x as any, c, v);
     }
     if (!!v && x !== "#print" && String(x).match(/^\#[A-Za-z]+/g)) {
-        return v.stack[String(x)];
+        const variable = v.stack[String(x)];
+        if (!variable) {
+            throw new Error(`Undefined variable '${String(x).slice(1)}'`);
+        }
+        return variable;
     } else {
         return x;
     }
