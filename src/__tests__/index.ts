@@ -120,4 +120,42 @@ describe("runProgramme", () => {
             "Undefined variable 'bees'"
         );
     });
+    it("Test case 1", () => {
+        const output = runProgram([
+            ["#def", "#sayHello", ["#fn", [], ["#print", "hello, world!"]]],
+            ["#sayHello"],
+            ["#sayHello"],
+            ["#sayHello"]
+        ]);
+        expect(output.split("\n")).toEqual([
+            "hello, world!",
+            "hello, world!",
+            "hello, world!"
+        ]);
+    });
+    it("Test case 2", () => {
+        const output = runProgram([
+            [
+                "#def",
+                "#multipleStatements",
+                [
+                    "#fn",
+                    [],
+                    ["#print", "one"],
+                    ["#print", "two"],
+                    ["#print", "three"]
+                ]
+            ],
+            ["#multipleStatements"],
+            ["#multipleStatements"]
+        ]);
+        expect(output.split("\n")).toEqual([
+            "one",
+            "two",
+            "three",
+            "one",
+            "two",
+            "three"
+        ]);
+    });
 });

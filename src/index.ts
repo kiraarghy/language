@@ -29,6 +29,9 @@ export const evalExpression = (
     if (expression === "#if") {
         return iffy(args, c);
     }
+    if (expression === "#fn") {
+        return args.slice(1);
+    }
     if (
         expression === "#def" &&
         !!v &&
@@ -63,7 +66,17 @@ export const evalExpression = (
             return null;
         }
         default: {
-            throw new Error(`No case for expression: '${expression}'`);
+            if (!!v) {
+                const variable = v.stack[String(expression)];
+                if (!variable) {
+                    throw new Error(
+                        `Undefined variable '${String(x).slice(1)}'`
+                    );
+                }
+                return variable.map((x: Expression) => evaluateArg(x, c, v));
+            } else {
+                throw new Error(`No case for expression: '${expression}'`);
+            }
         }
     }
 };

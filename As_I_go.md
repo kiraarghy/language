@@ -109,3 +109,11 @@ Also tidied up the output functionality to make it work nicer!
 Looked into the above `#print` problem as mentioned at end of 21/Oct/2019 I think it's working as 'expected' now since the fixes I pushed today 🤷‍♀️.
 
 Added better error reporting for undefined variables and undefined expressions!
+
+## 29th October 2019
+
+Not had a huge amount of time to work on this due to other commitments and general work changes.
+
+So where are we at?
+
+We have function definitions working! If a user uses the `#def` expression and passes it a `#fn` expression that `#fn` will maintain a reference to the arguments passed to it. The `#fn` is then evaluated when it is called 🥳.
