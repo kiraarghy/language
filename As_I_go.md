@@ -117,3 +117,7 @@ Not had a huge amount of time to work on this due to other commitments and gener
 So where are we at?
 
 We have function definitions working! If a user uses the `#def` expression and passes it a `#fn` expression that `#fn` will maintain a reference to the arguments passed to it. The `#fn` is then evaluated when it is called 🥳.
+
+Apparently all my tests work, I'm good me.
+
+Though I keep on forgetting you should assert `toThrowError` on a function that when called throws an error, otherwise it throws when invoked.

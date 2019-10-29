@@ -5,7 +5,7 @@ type Expression = Primitive | List;
 type ProgramOutput = { lines: string[]; addToOutput: (x: string) => void };
 type Variables = {
     stack: { [key: string]: any };
-    addToStack: (key: string, val: any) => void;
+    addToStack: (key: string, val: Expression) => void;
 };
 
 export const runProgram = (x: Expression[]): any => {
@@ -70,7 +70,7 @@ export const evalExpression = (
                 const variable = v.stack[String(expression)];
                 if (!variable) {
                     throw new Error(
-                        `Undefined variable '${String(x).slice(1)}'`
+                        `Undefined variable '${String(expression).slice(1)}'`
                     );
                 }
                 return variable.map((x: Expression) => evaluateArg(x, c, v));

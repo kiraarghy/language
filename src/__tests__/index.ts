@@ -158,4 +158,44 @@ describe("runProgramme", () => {
             "three"
         ]);
     });
+    it("Test case 3", () => {
+        const output = runProgram([
+            ["#def", "#x", 3],
+            [
+                "#def",
+                "#add3ToXAndPrint",
+                ["#fn", [], ["#print", ["#str", "x + 3 = ", ["#add", "#x", 3]]]]
+            ],
+
+            ["#add3ToXAndPrint"],
+            ["#def", "#x", 10],
+            ["#add3ToXAndPrint"]
+        ]);
+        expect(output.split("\n")).toEqual(["x + 3 = 6", "x + 3 = 13"]);
+    });
+    it("Test case 4", () => {
+        const output = runProgram([
+            ["#def", "#sayHello", ["#fn", [], ["#print", "hello"]]],
+
+            ["#def", "#sayHello2", ["#fn", [], ["#sayHello"], ["#sayHello"]]],
+
+            ["#def", "#sayHello4", ["#fn", [], ["#sayHello2"], ["#sayHello2"]]],
+
+            ["#sayHello4"]
+        ]);
+        expect(output.split("\n")).toEqual([
+            "hello",
+            "hello",
+            "hello",
+            "hello"
+        ]);
+    });
+    it("Test case 5", () => {
+        expect(() =>
+            runProgram([
+                ["#sayHello"],
+                ["#def", "#sayHello", ["#fn", [], ["#print"]]]
+            ])
+        ).toThrowError(new Error("Undefined variable 'sayHello'"));
+    });
 });
