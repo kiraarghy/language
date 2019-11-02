@@ -121,3 +121,16 @@ We have function definitions working! If a user uses the `#def` expression and p
 Apparently all my tests work, I'm good me.
 
 Though I keep on forgetting you should assert `toThrowError` on a function that when called throws an error, otherwise it throws when invoked.
+
+# 1st November 2019
+
+Spending a delayed train journey refactoring the language into a more sensible (at least for me) organisation.
+
+-   `index.ts` includes the main runtime and evaluators of the language.
+-   `standardLib.ts` includes all the defined expressions called by `evalExpression`.
+-   `utils.ts` currently includes my context functions for program output and variables.
+-   `types.ts` maintains all my defined types.
+
+This was pretty simple and quick with TypeScript and reminds me how nice typesystems can be for major refactors.
+
+All tests continue to pass!
